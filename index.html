@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Photography portfolio" />
+  <title>Your Name — Photography</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="#top" aria-label="Home">
+      <span class="brand__name">Your Name</span>
+      <span class="brand__tag">Photography</span>
+    </a>
+
+    <nav class="nav">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">
+      <span aria-hidden="true">◐</span>
+    </button>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero__content">
+        <h1>Sleek. Minimal. Focused on the work.</h1>
+        <p>
+          A clean portfolio built for photography—fast grid, subtle motion, and a distraction-free lightbox.
+        </p>
+        <div class="hero__actions">
+          <a class="btn" href="#work">View work</a>
+          <a class="btn btn--ghost" href="#contact">Get in touch</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="work" class="section">
+      <div class="section__head">
+        <h2>Selected work</h2>
+        <p>Curated gallery — click any image to view.</p>
+      </div>
+
+      <div class="filters" role="tablist" aria-label="Gallery filters">
+        <button class="chip is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button class="chip" data-filter="portraits" role="tab" aria-selected="false">Portraits</button>
+        <button class="chip" data-filter="street" role="tab" aria-selected="false">Street</button>
+        <button class="chip" data-filter="landscape" role="tab" aria-selected="false">Landscape</button>
+      </div>
+
+      <div class="grid" id="grid" aria-label="Image gallery">
+        <!-- Cards injected by script.js -->
+      </div>
+    </section>
+
+    <section id="about" class="section section--split">
+      <div>
+        <h2>About</h2>
+        <p>
+          Write a short bio here—your style, your approach, what you shoot, and what you’re available for.
+          Keep it concise and confident.
+        </p>
+        <ul class="list">
+          <li>Based in: Hoboken / NYC</li>
+          <li>Available for: Editorial • Events • Portraits</li>
+          <li>Gear: (optional)</li>
+        </ul>
+      </div>
+
+      <div class="about-card">
+        <div class="about-card__inner">
+          <div class="about-card__line"></div>
+          <p class="about-card__quote">
+            “A single sentence that captures your photographic point of view.”
+          </p>
+          <p class="about-card__meta">— Your Name</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="section__head">
+        <h2>Contact</h2>
+        <p>For bookings, prints, or collaborations.</p>
+      </div>
+
+      <div class="contact">
+        <a class="contact__item" href="mailto:you@email.com">
+          <span class="contact__label">Email</span>
+          <span class="contact__value">you@email.com</span>
+        </a>
+        <a class="contact__item" href="https://instagram.com/yourhandle" target="_blank" rel="noreferrer">
+          <span class="contact__label">Instagram</span>
+          <span class="contact__value">@yourhandle</span>
+        </a>
+        <a class="contact__item" href="https://www.behance.net/" target="_blank" rel="noreferrer">
+          <span class="contact__label">Behance</span>
+          <span class="contact__value">Portfolio</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Your Name. All rights reserved.</p>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <button class="lightbox__close" id="closeLightbox" aria-label="Close">✕</button>
+    <button class="lightbox__nav lightbox__nav--prev" id="prevBtn" aria-label="Previous">‹</button>
+    <figure class="lightbox__figure">
+      <img id="lightboxImg" alt="" />
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+    <button class="lightbox__nav lightbox__nav--next" id="nextBtn" aria-label="Next">›</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
