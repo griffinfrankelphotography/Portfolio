@@ -8,41 +8,36 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="header">
+    <div></div>
     <a class="brand" href="index.html" aria-label="Home">
       <span class="brand__name">Griffin Frankel</span>
-      <span class="brand__tag">Photography</span>
+      <span class="brand__tag">Events</span>
     </a>
-
-    <nav class="nav">
-      <a href="portrait.html">Portrait</a>
-      <a href="city-nature.html">City &amp; Nature</a>
-      <a href="events.html" class="nav--active">Events</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-
-    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">
-      <span aria-hidden="true">◐</span>
-    </button>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu">Menu</button>
   </header>
 
+  <nav class="nav-overlay" id="navOverlay" aria-label="Site navigation">
+    <button class="nav-overlay__close" id="menuClose" aria-label="Close menu">Close</button>
+    <ul class="nav-overlay__links">
+      <li><a href="portrait.html">Portrait</a></li>
+      <li><a href="city-nature.html">City &amp; Nature</a></li>
+      <li><a href="events.html">Events</a></li>
+      <div class="nav-overlay__divider"></div>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
   <main>
-    <section class="section">
-      <div class="section__head">
-        <a class="back-link" href="index.html">← Home</a>
-        <h2>Events</h2>
-        <p>Moments as they happen — click any image to view.</p>
-      </div>
-      <div class="grid" id="grid-events" aria-label="Events gallery">
-        <!-- Cards injected by script.js -->
-      </div>
-    </section>
+    <div class="grid" id="grid-events" aria-label="Events gallery">
+      <!-- Cards injected by script.js -->
+    </div>
   </main>
 
   <footer class="footer">
