@@ -12,18 +12,6 @@
     "tag": "portrait"
   },
   {
-    "src": "images/photo-02.jpg",
-    "tag": "city-nature"
-  },
-  {
-    "src": "images/photo-07.jpg",
-    "tag": "city-nature"
-  },
-  {
-    "src": "images/photo-03.jpg",
-    "tag": "city-nature"
-  },
-  {
     "src": "images/photo-05.jpg",
     "tag": "events"
   },
@@ -33,6 +21,14 @@
   },
   {
     "src": "images/2T7A2847.jpeg",
+    "tag": "city-nature"
+  },
+  {
+    "src": "images/IMG_1953.jpg",
+    "tag": "city-nature"
+  },
+  {
+    "src": "images/IMG_1944.jpg",
     "tag": "city-nature"
   }
 ]
