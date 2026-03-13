@@ -30,11 +30,6 @@
     "aspect": 0.563
   },
   {
-    "src": "images/IMG_1944.jpg",
-    "tag": "city-nature",
-    "aspect": 0.75
-  },
-  {
     "src": "images/IMG_2371.jpg",
     "tag": "city-nature",
     "aspect": 1.333
@@ -43,5 +38,15 @@
     "src": "images/IMG_1920.jpg",
     "tag": "city-nature",
     "aspect": 1.333
+  },
+  {
+    "src": "images/IMG_1965.jpg",
+    "tag": "city-nature",
+    "aspect": 0.75
+  },
+  {
+    "src": "images/IMG_1943.jpg",
+    "tag": "city-nature",
+    "aspect": 0.75
   }
 ]
