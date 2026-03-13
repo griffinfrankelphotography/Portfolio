@@ -71,21 +71,40 @@ if (lightbox) {
     if (e.key === "ArrowRight") step(1);
   });
 
+  function applyAspect(card, aspect) {
+    card.style.aspectRatio = String(aspect);
+    card.style.gridColumn  = aspect > 1.1 ? "span 2" : "span 1";
+  }
+
   function renderGallery(gridId, tag, photos) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     const list = photos.filter(p => p.tag === tag);
     list.forEach((p, i) => {
-      // Use stored aspect ratio; fall back to portrait default
-      const aspect = p.aspect || 0.8;
-      const isLandscape = aspect > 1.1;
       const card = document.createElement("button");
       card.className = "card";
-      card.style.gridColumn = isLandscape ? "span 2" : "span 1";
-      card.style.aspectRatio = String(aspect);
       card.setAttribute("type", "button");
       card.setAttribute("aria-label", "Open photo");
-      card.innerHTML = `<img src="${p.src}" alt="" loading="lazy" />`;
+
+      const img = document.createElement("img");
+      img.alt = "";
+
+      if (p.aspect) {
+        // Stored aspect — apply immediately, lazy-load the image
+        applyAspect(card, p.aspect);
+        img.loading = "lazy";
+      } else {
+        // Legacy photo — probe natural dimensions before showing
+        card.style.aspectRatio = "4/5"; // placeholder to reserve space
+        img.loading = "eager";
+        img.onload = () => {
+          const a = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
+          applyAspect(card, a);
+        };
+      }
+
+      img.src = p.src;
+      card.appendChild(img);
       card.addEventListener("click", () => openLightbox(list, i));
       grid.appendChild(card);
     });
