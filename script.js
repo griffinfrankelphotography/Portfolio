@@ -71,7 +71,7 @@ if (lightbox) {
     if (e.key === "ArrowRight") step(1);
   });
 
-  const GAP = 3;
+  const GAP = 10;
 
   function renderGallery(gridId, tag, photos) {
     const grid = document.getElementById(gridId);
