@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Contact Griffin Frankel for bookings, prints, and collaborations." />
+  <title>Contact — Griffin Frankel Photography</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html" aria-label="Home">
+      <span class="brand__name">Griffin Frankel</span>
+      <span class="brand__tag">Photography</span>
+    </a>
+
+    <nav class="nav">
+      <a href="portrait.html">Portrait</a>
+      <a href="city-nature.html">City &amp; Nature</a>
+      <a href="events.html">Events</a>
+      <a href="contact.html" class="nav--active">Contact</a>
+    </nav>
+
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">
+      <span aria-hidden="true">◐</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="section section--split">
+      <div>
+        <a class="back-link" href="index.html">← Home</a>
+        <h2>About</h2>
+        <p>
+          I'm Griffin Frankel — a photographer based in the New York area. I shoot portraits,
+          city scenes, and landscapes, and document events — chasing light and authentic moments wherever I find them.
+        </p>
+        <ul class="list">
+          <li>Based in: New York / NJ</li>
+          <li>Available for: Editorial • Events • Portraits</li>
+        </ul>
+      </div>
+
+      <div class="about-card">
+        <div class="about-card__inner">
+          <div class="about-card__line"></div>
+          <p class="about-card__quote">
+            "The best photographs are the ones that make you feel something before you understand why."
+          </p>
+          <p class="about-card__meta">— Griffin Frankel</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--bordered">
+      <div class="section__head">
+        <h2>Contact</h2>
+        <p>For bookings, prints, or collaborations.</p>
+      </div>
+
+      <div class="contact">
+        <a class="contact__item" href="mailto:photography@griffinfrankel.com">
+          <span class="contact__label">Email</span>
+          <span class="contact__value">photography@griffinfrankel.com</span>
+        </a>
+        <a class="contact__item" href="https://instagram.com/griffinfrankel" target="_blank" rel="noreferrer">
+          <span class="contact__label">Instagram</span>
+          <span class="contact__value">@griffinfrankel</span>
+        </a>
+        <a class="contact__item" href="https://griffinfrankel.com" target="_blank" rel="noreferrer">
+          <span class="contact__label">Website</span>
+          <span class="contact__value">griffinfrankel.com</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Griffin Frankel. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

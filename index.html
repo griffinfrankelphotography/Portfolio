@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Griffin Frankel — Photography portfolio featuring portrait, city &amp; nature, and events work." />
+  <meta name="description" content="Griffin Frankel Photography — Portrait, city &amp; nature, and events." />
   <title>Griffin Frankel Photography</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,17 +14,16 @@
 </head>
 <body>
   <header class="header">
-    <a class="brand" href="#top" aria-label="Home">
+    <a class="brand" href="index.html" aria-label="Home">
       <span class="brand__name">Griffin Frankel</span>
       <span class="brand__tag">Photography</span>
     </a>
 
     <nav class="nav">
-      <a href="#portrait">Portrait</a>
-      <a href="#city-nature">City &amp; Nature</a>
-      <a href="#events">Events</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
+      <a href="portrait.html">Portrait</a>
+      <a href="city-nature.html">City &amp; Nature</a>
+      <a href="events.html">Events</a>
+      <a href="contact.html">Contact</a>
     </nav>
 
     <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">
@@ -32,92 +31,46 @@
     </button>
   </header>
 
-  <main id="top">
+  <main>
     <section class="hero">
       <div class="hero__content">
         <h1>Griffin Frankel Photography</h1>
-        <p>
-          Portrait, city &amp; nature, and events — captured with intention.
-        </p>
-        <div class="hero__actions">
-          <a class="btn" href="#portrait">View work</a>
-          <a class="btn btn--ghost" href="#contact">Get in touch</a>
-        </div>
+        <p>Portrait, city &amp; nature, and events — captured with intention.</p>
       </div>
     </section>
 
-    <section id="portrait" class="section">
-      <div class="section__head">
-        <h2>Portrait</h2>
-        <p>People and faces — click any image to view.</p>
-      </div>
-      <div class="grid" id="grid-portrait" aria-label="Portrait gallery">
-        <!-- Cards injected by script.js -->
-      </div>
-    </section>
-
-    <section id="city-nature" class="section section--bordered">
-      <div class="section__head">
-        <h2>City &amp; Nature</h2>
-        <p>Urban scenes and landscapes — click any image to view.</p>
-      </div>
-      <div class="grid" id="grid-city-nature" aria-label="City and nature gallery">
-        <!-- Cards injected by script.js -->
-      </div>
-    </section>
-
-    <section id="events" class="section section--bordered">
-      <div class="section__head">
-        <h2>Events</h2>
-        <p>Moments as they happen — click any image to view.</p>
-      </div>
-      <div class="grid" id="grid-events" aria-label="Events gallery">
-        <!-- Cards injected by script.js -->
-      </div>
-    </section>
-
-    <section id="about" class="section section--split">
-      <div>
-        <h2>About</h2>
-        <p>
-          I’m Griffin Frankel — a photographer based in the New York area. I shoot portraits,
-          city scenes, and landscapes, and document events — chasing light and authentic moments wherever I find them.
-        </p>
-        <ul class="list">
-          <li>Based in: New York / NJ</li>
-          <li>Available for: Editorial • Events • Portraits</li>
-        </ul>
-      </div>
-
-      <div class="about-card">
-        <div class="about-card__inner">
-          <div class="about-card__line"></div>
-          <p class=”about-card__quote”>
-            “The best photographs are the ones that make you feel something before you understand why.”
-          </p>
-          <p class=”about-card__meta”>— Griffin Frankel</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section">
-      <div class="section__head">
-        <h2>Contact</h2>
-        <p>For bookings, prints, or collaborations.</p>
-      </div>
-
-      <div class="contact">
-        <a class="contact__item" href="mailto:photography@griffinfrankel.com">
-          <span class="contact__label">Email</span>
-          <span class="contact__value">photography@griffinfrankel.com</span>
+    <section class="section">
+      <div class="menu-grid">
+        <a class="menu-card" href="portrait.html">
+          <div class="menu-card__body">
+            <span class="menu-card__title">Portrait</span>
+            <span class="menu-card__sub">People and faces</span>
+          </div>
+          <span class="menu-card__arrow">→</span>
         </a>
-        <a class="contact__item" href="https://instagram.com/griffinfrankel" target="_blank" rel="noreferrer">
-          <span class="contact__label">Instagram</span>
-          <span class="contact__value">@griffinfrankel</span>
+
+        <a class="menu-card" href="city-nature.html">
+          <div class="menu-card__body">
+            <span class="menu-card__title">City &amp; Nature</span>
+            <span class="menu-card__sub">Urban scenes and landscapes</span>
+          </div>
+          <span class="menu-card__arrow">→</span>
         </a>
-        <a class="contact__item" href="https://griffinfrankel.com" target="_blank" rel="noreferrer">
-          <span class="contact__label">Website</span>
-          <span class="contact__value">griffinfrankel.com</span>
+
+        <a class="menu-card" href="events.html">
+          <div class="menu-card__body">
+            <span class="menu-card__title">Events</span>
+            <span class="menu-card__sub">Moments as they happen</span>
+          </div>
+          <span class="menu-card__arrow">→</span>
+        </a>
+
+        <a class="menu-card" href="contact.html">
+          <div class="menu-card__body">
+            <span class="menu-card__title">Contact</span>
+            <span class="menu-card__sub">Bookings, prints &amp; collaborations</span>
+          </div>
+          <span class="menu-card__arrow">→</span>
         </a>
       </div>
     </section>
@@ -126,17 +79,6 @@
   <footer class="footer">
     <p>© <span id="year"></span> Griffin Frankel. All rights reserved.</p>
   </footer>
-
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
-    <button class="lightbox__close" id="closeLightbox" aria-label="Close">✕</button>
-    <button class="lightbox__nav lightbox__nav--prev" id="prevBtn" aria-label="Previous">‹</button>
-    <figure class="lightbox__figure">
-      <img id="lightboxImg" alt="" />
-      <figcaption id="lightboxCaption"></figcaption>
-    </figure>
-    <button class="lightbox__nav lightbox__nav--next" id="nextBtn" aria-label="Next">›</button>
-  </div>
 
   <script src="script.js"></script>
 </body>
