@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Griffin Frankel — Photography portfolio featuring portraits, street, and landscape work." />
+  <meta name="description" content="Griffin Frankel — Photography portfolio featuring portrait, city &amp; nature, and events work." />
   <title>Griffin Frankel — Photography</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,9 @@
     </a>
 
     <nav class="nav">
-      <a href="#work">Work</a>
+      <a href="#portrait">Portrait</a>
+      <a href="#city-nature">City &amp; Nature</a>
+      <a href="#events">Events</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -35,7 +37,7 @@
       <div class="hero__content">
         <h1>Griffin Frankel — Photography</h1>
         <p>
-          Portraits, street, and landscape — captured with intention.
+          Portrait, city &amp; nature, and events — captured with intention.
         </p>
         <div class="hero__actions">
           <a class="btn" href="#work">View work</a>
@@ -44,20 +46,32 @@
       </div>
     </section>
 
-    <section id="work" class="section">
+    <section id="portrait" class="section">
       <div class="section__head">
-        <h2>Selected work</h2>
-        <p>Curated gallery — click any image to view.</p>
+        <h2>Portrait</h2>
+        <p>People and faces — click any image to view.</p>
       </div>
-
-      <div class="filters" role="tablist" aria-label="Gallery filters">
-        <button class="chip is-active" data-filter="all" role="tab" aria-selected="true">All</button>
-        <button class="chip" data-filter="portraits" role="tab" aria-selected="false">Portraits</button>
-        <button class="chip" data-filter="street" role="tab" aria-selected="false">Street</button>
-        <button class="chip" data-filter="landscape" role="tab" aria-selected="false">Landscape</button>
+      <div class="grid" id="grid-portrait" aria-label="Portrait gallery">
+        <!-- Cards injected by script.js -->
       </div>
+    </section>
 
-      <div class="grid" id="grid" aria-label="Image gallery">
+    <section id="city-nature" class="section section--bordered">
+      <div class="section__head">
+        <h2>City &amp; Nature</h2>
+        <p>Urban scenes and landscapes — click any image to view.</p>
+      </div>
+      <div class="grid" id="grid-city-nature" aria-label="City and nature gallery">
+        <!-- Cards injected by script.js -->
+      </div>
+    </section>
+
+    <section id="events" class="section section--bordered">
+      <div class="section__head">
+        <h2>Events</h2>
+        <p>Moments as they happen — click any image to view.</p>
+      </div>
+      <div class="grid" id="grid-events" aria-label="Events gallery">
         <!-- Cards injected by script.js -->
       </div>
     </section>
@@ -67,7 +81,7 @@
         <h2>About</h2>
         <p>
           I’m Griffin Frankel — a photographer based in the New York area. I shoot portraits,
-          street scenes, and landscapes, chasing light and authentic moments wherever I find them.
+          city scenes, and landscapes, and document events — chasing light and authentic moments wherever I find them.
         </p>
         <ul class="list">
           <li>Based in: New York / NJ</li>
