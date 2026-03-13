@@ -21,22 +21,27 @@
   },
   {
     "src": "images/2T7A2847.jpeg",
-    "tag": "city-nature"
+    "tag": "city-nature",
+    "aspect": 1.499
   },
   {
     "src": "images/IMG_1953.jpg",
-    "tag": "city-nature"
+    "tag": "city-nature",
+    "aspect": 0.563
   },
   {
     "src": "images/IMG_1944.jpg",
-    "tag": "city-nature"
+    "tag": "city-nature",
+    "aspect": 0.75
   },
   {
     "src": "images/IMG_2371.jpg",
-    "tag": "city-nature"
+    "tag": "city-nature",
+    "aspect": 1.333
   },
   {
     "src": "images/IMG_1920.jpg",
-    "tag": "city-nature"
+    "tag": "city-nature",
+    "aspect": 1.333
   }
 ]
