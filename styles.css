@@ -119,7 +119,7 @@ main{ width: 100%; }
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 100px 22px 48px;
   position: relative;
   background-image: url(images/IMG_1759.jpeg);
