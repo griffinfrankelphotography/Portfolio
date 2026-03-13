@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · Griffin Frankel Photography</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #161616;
+      --border: rgba(255,255,255,0.1);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.45);
+      --green: #4ade80;
+      --red: #f87171;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+    .topbar__title {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .topbar__right { display: flex; align-items: center; gap: 16px; }
+    .save-status { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+
+    /* ── Buttons ── */
+    .btn {
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      padding: 10px 24px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .btn:hover:not(:disabled) { opacity: 0.8; }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn--ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Layout ── */
+    .main { max-width: 1000px; margin: 0 auto; padding: 48px 32px; }
+
+    /* ── Setup / token ── */
+    .setup {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px 32px;
+      margin-bottom: 56px;
+    }
+    .setup__label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+    .setup__hint { color: var(--muted); line-height: 1.65; margin-bottom: 16px; font-size: 13px; }
+    .setup__hint a { color: var(--text); }
+    .input-row { display: flex; gap: 10px; align-items: center; }
+    .input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: monospace;
+      outline: none;
+    }
+    .input:focus { border-color: rgba(255,255,255,0.35); }
+    .token-status {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 10px;
+      min-height: 16px;
+    }
+    .token-status.ok { color: var(--green); }
+    .token-status.err { color: var(--red); }
+
+    /* ── Section headings ── */
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+    /* ── Drop zone ── */
+    .dropzone {
+      border: 2px dashed var(--border);
+      padding: 52px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      margin-bottom: 28px;
+    }
+    .dropzone:hover, .dropzone.drag-over { border-color: rgba(255,255,255,0.4); }
+    .dropzone__text strong { display: block; font-size: 16px; margin-bottom: 6px; }
+    .dropzone__text span { color: var(--muted); font-size: 13px; }
+
+    /* ── Staged grid ── */
+    .staged-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .staged-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .staged-card img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      display: block;
+    }
+    .staged-card__footer { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .staged-card__name {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 8px;
+      font-size: 12px;
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+    }
+    .staged-card__remove {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      align-self: flex-end;
+      padding: 2px 4px;
+      line-height: 1;
+    }
+    .staged-card__remove:hover { color: var(--red); }
+    .staged-actions { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
+    .staged-actions span { font-size: 12px; color: var(--muted); }
+
+    /* ── Progress ── */
+    .progress { margin-bottom: 24px; display: none; }
+    .progress.visible { display: block; }
+    .progress__track { background: var(--border); height: 2px; }
+    .progress__fill { background: var(--text); height: 2px; width: 0%; transition: width 0.3s; }
+    .progress__label { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+    /* ── Existing galleries ── */
+    .gallery-section { margin-bottom: 44px; }
+    .gallery-section__title {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .existing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .existing-card { position: relative; background: var(--surface); }
+    .existing-card img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      display: block;
+      background: #1a1a1a;
+      min-height: 80px;
+    }
+    .existing-card__remove {
+      position: absolute;
+      top: 6px; right: 6px;
+      background: rgba(0,0,0,0.75);
+      border: none;
+      color: #fff;
+      width: 26px; height: 26px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .existing-card:hover .existing-card__remove { opacity: 1; }
+    .existing-card__remove:hover { background: var(--red); color: #000; }
+    .existing-card__label {
+      font-size: 10px;
+      color: var(--muted);
+      padding: 5px 7px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .existing-card--removed { opacity: 0.3; }
+    .existing-card--removed .existing-card__remove { display: none; }
+    .existing-card__undo {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .existing-card--removed .existing-card__undo { display: flex; }
+    .empty { color: var(--muted); font-size: 13px; padding: 4px 0; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 13px 18px;
+      font-size: 13px;
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      max-width: 300px;
+      line-height: 1.4;
+    }
+    .toast.show { opacity: 1; transform: none; }
+    .toast.success { border-color: var(--green); color: var(--green); }
+    .toast.error { border-color: var(--red); color: var(--red); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar__title">Griffin Frankel Photography &middot; Admin</span>
+  <div class="topbar__right">
+    <span class="save-status" id="saveStatus"></span>
+    <button class="btn" id="publishBtn" disabled>Publish Changes</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Token setup -->
+  <div class="setup" id="setupSection">
+    <span class="setup__label">GitHub Token</span>
+    <p class="setup__hint">
+      To upload photos and publish changes, paste a GitHub Personal Access Token with <strong>repo</strong> scope.<br>
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=GFP+Admin" target="_blank">Create a token on GitHub &rarr;</a>
+    </p>
+    <div class="input-row">
+      <input class="input" type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+      <button class="btn btn--ghost" id="saveTokenBtn">Connect</button>
+      <button class="btn btn--ghost hidden" id="clearTokenBtn">Disconnect</button>
+    </div>
+    <div class="token-status" id="tokenStatus"></div>
+  </div>
+
+  <!-- Add photos -->
+  <p class="section-label">Add Photos</p>
+
+  <div class="dropzone" id="dropzone">
+    <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+    <div class="dropzone__text">
+      <strong>Click to select photos</strong>
+      <span>or drag &amp; drop — JPG, PNG, HEIC, etc.</span>
+    </div>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress__track"><div class="progress__fill" id="progressFill"></div></div>
+    <div class="progress__label" id="progressLabel">Uploading…</div>
+  </div>
+
+  <div class="staged-grid" id="stagedGrid"></div>
+
+  <div class="staged-actions hidden" id="stagedActions">
+    <button class="btn" id="uploadBtn">Upload to Site</button>
+    <span id="stagedCount"></span>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Existing galleries -->
+  <p class="section-label">Current Galleries</p>
+
+  <div class="gallery-section">
+    <div class="gallery-section__title">Portrait</div>
+    <div class="existing-grid" id="existing-portrait"></div>
+  </div>
+
+  <div class="gallery-section">
+    <div class="gallery-section__title">City &amp; Nature</div>
+    <div class="existing-grid" id="existing-city-nature"></div>
+  </div>
+
+  <div class="gallery-section">
+    <div class="gallery-section__title">Events</div>
+    <div class="existing-grid" id="existing-events"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const REPO   = 'griffinfrankelphotography/Portfolio';
+const BRANCH = 'main';
+const API    = 'https://api.github.com';
+
+// ── State ──────────────────────────────────────────────────────────────────
+let token           = localStorage.getItem('gfp_token') || '';
+let photosData      = [];   // current photos.json contents
+let photosSha       = '';   // sha for update requests
+let staged          = [];   // files picked but not yet uploaded
+let pendingRemoves  = new Set();
+let hasChanges      = false;
+
+// ── DOM ────────────────────────────────────────────────────────────────────
+const tokenInput   = document.getElementById('tokenInput');
+const saveTokenBtn = document.getElementById('saveTokenBtn');
+const clearTokenBtn= document.getElementById('clearTokenBtn');
+const tokenStatus  = document.getElementById('tokenStatus');
+const dropzone     = document.getElementById('dropzone');
+const fileInput    = document.getElementById('fileInput');
+const stagedGrid   = document.getElementById('stagedGrid');
+const stagedActions= document.getElementById('stagedActions');
+const stagedCount  = document.getElementById('stagedCount');
+const uploadBtn    = document.getElementById('uploadBtn');
+const publishBtn   = document.getElementById('publishBtn');
+const saveStatus   = document.getElementById('saveStatus');
+const progress     = document.getElementById('progress');
+const progressFill = document.getElementById('progressFill');
+const progressLabel= document.getElementById('progressLabel');
+const toast        = document.getElementById('toast');
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+if (token) {
+  tokenInput.value = '•'.repeat(20);
+  setTokenUI(true);
+  loadPhotos();
+}
+
+// ── Token ──────────────────────────────────────────────────────────────────
+saveTokenBtn.addEventListener('click', () => {
+  const val = tokenInput.value.trim();
+  if (!val || val.startsWith('•')) return;
+  token = val;
+  localStorage.setItem('gfp_token', token);
+  tokenInput.value = '•'.repeat(20);
+  setTokenUI(true);
+  loadPhotos();
+});
+
+clearTokenBtn.addEventListener('click', () => {
+  token = '';
+  localStorage.removeItem('gfp_token');
+  tokenInput.value = '';
+  tokenStatus.textContent = '';
+  tokenStatus.className = 'token-status';
+  setTokenUI(false);
+  publishBtn.disabled = true;
+});
+
+function setTokenUI(connected) {
+  saveTokenBtn.classList.toggle('hidden', connected);
+  clearTokenBtn.classList.toggle('hidden', !connected);
+}
+
+// ── GitHub helpers ─────────────────────────────────────────────────────────
+async function ghGet(path) {
+  const r = await fetch(`${API}${path}`, {
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
+  return r.json();
+}
+
+async function ghPut(path, body) {
+  const r = await fetch(`${API}${path}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub ${r.status}`);
+  }
+  return r.json();
+}
+
+// ── Load photos.json ───────────────────────────────────────────────────────
+async function loadPhotos() {
+  tokenStatus.textContent = 'Connecting…';
+  tokenStatus.className = 'token-status';
+  try {
+    const data = await ghGet(`/repos/${REPO}/contents/photos.json?ref=${BRANCH}`);
+    photosSha  = data.sha;
+    photosData = JSON.parse(atob(data.content.replace(/\s/g, '')));
+    tokenStatus.textContent = '✓ Connected';
+    tokenStatus.className = 'token-status ok';
+    publishBtn.disabled = false;
+    renderExisting();
+  } catch (e) {
+    if (e.message.includes('404')) {
+      photosData = [];
+      photosSha  = '';
+      tokenStatus.textContent = '✓ Connected';
+      tokenStatus.className = 'token-status ok';
+      publishBtn.disabled = false;
+      renderExisting();
+    } else {
+      tokenStatus.textContent = '✗ Could not connect — check your token';
+      tokenStatus.className = 'token-status err';
+    }
+  }
+}
+
+// ── Render existing galleries ──────────────────────────────────────────────
+function renderExisting() {
+  ['portrait', 'city-nature', 'events'].forEach(tag => {
+    const el = document.getElementById(`existing-${tag}`);
+    const items = photosData.filter(p => p.tag === tag);
+    if (items.length === 0) {
+      el.innerHTML = '<p class="empty">No photos yet.</p>';
+      return;
+    }
+    el.innerHTML = '';
+    items.forEach(p => {
+      const removed = pendingRemoves.has(p.src);
+      const filename = p.src.replace('images/', '');
+      const card = document.createElement('div');
+      card.className = 'existing-card' + (removed ? ' existing-card--removed' : '');
+      card.innerHTML = `
+        <img src="${p.src}" alt="${filename}" loading="lazy">
+        <button class="existing-card__remove" title="Remove">✕</button>
+        <div class="existing-card__undo">Undo</div>
+        <div class="existing-card__label">${filename}</div>
+      `;
+      card.querySelector('.existing-card__remove').addEventListener('click', () => {
+        pendingRemoves.add(p.src);
+        markChanged();
+        renderExisting();
+      });
+      card.querySelector('.existing-card__undo').addEventListener('click', () => {
+        pendingRemoves.delete(p.src);
+        if (pendingRemoves.size === 0 && staged.length === 0) hasChanges = false;
+        renderExisting();
+        updateSaveStatus();
+      });
+      el.appendChild(card);
+    });
+  });
+}
+
+// ── Drop zone ──────────────────────────────────────────────────────────────
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  addFiles([...e.dataTransfer.files].filter(f => f.type.startsWith('image/')));
+});
+fileInput.addEventListener('change', () => { addFiles([...fileInput.files]); fileInput.value = ''; });
+
+function addFiles(files) {
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      staged.push({ file, dataUrl: e.target.result, tag: 'portrait' });
+      renderStaged();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderStaged() {
+  stagedGrid.innerHTML = '';
+  if (staged.length === 0) { stagedActions.classList.add('hidden'); return; }
+  stagedActions.classList.remove('hidden');
+  stagedCount.textContent = `${staged.length} photo${staged.length > 1 ? 's' : ''} selected`;
+  staged.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'staged-card';
+    card.innerHTML = `
+      <img src="${item.dataUrl}" alt="">
+      <div class="staged-card__footer">
+        <div class="staged-card__name">${item.file.name}</div>
+        <select class="select" data-i="${i}">
+          <option value="portrait">Portrait</option>
+          <option value="city-nature">City &amp; Nature</option>
+          <option value="events">Events</option>
+        </select>
+        <button class="staged-card__remove" data-i="${i}" title="Remove">✕</button>
+      </div>
+    `;
+    card.querySelector('select').value = item.tag;
+    card.querySelector('select').addEventListener('change', e => { staged[+e.target.dataset.i].tag = e.target.value; });
+    card.querySelector('.staged-card__remove').addEventListener('click', e => {
+      staged.splice(+e.currentTarget.dataset.i, 1);
+      renderStaged();
+    });
+    stagedGrid.appendChild(card);
+  });
+}
+
+// ── Upload ─────────────────────────────────────────────────────────────────
+uploadBtn.addEventListener('click', async () => {
+  if (!token) { showToast('Connect your GitHub token first', 'error'); return; }
+  if (staged.length === 0) return;
+
+  uploadBtn.disabled = true;
+  progress.classList.add('visible');
+
+  let done = 0;
+  const uploaded = [];
+
+  for (const item of staged) {
+    const filename = item.file.name.replace(/\s+/g, '-');
+    const path = `images/${filename}`;
+    progressLabel.textContent = `Uploading ${filename}…`;
+
+    try {
+      let sha;
+      try { sha = (await ghGet(`/repos/${REPO}/contents/${path}?ref=${BRANCH}`)).sha; } catch (_) {}
+
+      await ghPut(`/repos/${REPO}/contents/${path}`, {
+        message: `Upload photo: ${filename}`,
+        content: item.dataUrl.split(',')[1],
+        branch: BRANCH,
+        ...(sha ? { sha } : {})
+      });
+
+      uploaded.push({ src: path, tag: item.tag });
+    } catch (e) {
+      showToast(`Failed: ${filename} — ${e.message}`, 'error');
+    }
+
+    done++;
+    progressFill.style.width = `${(done / staged.length) * 100}%`;
+  }
+
+  photosData = [...photosData, ...uploaded];
+  staged = [];
+  renderStaged();
+  renderExisting();
+  progress.classList.remove('visible');
+  progressFill.style.width = '0%';
+  uploadBtn.disabled = false;
+
+  if (uploaded.length) {
+    markChanged();
+    showToast(`${uploaded.length} photo${uploaded.length > 1 ? 's' : ''} uploaded. Click Publish to go live.`, 'success');
+  }
+});
+
+// ── Publish ────────────────────────────────────────────────────────────────
+publishBtn.addEventListener('click', async () => {
+  if (!token) { showToast('Connect your GitHub token first', 'error'); return; }
+
+  publishBtn.disabled = true;
+  saveStatus.textContent = 'Publishing…';
+
+  const final = photosData.filter(p => !pendingRemoves.has(p.src));
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(final, null, 2))));
+
+  try {
+    const res = await ghPut(`/repos/${REPO}/contents/photos.json`, {
+      message: 'Update gallery',
+      content,
+      branch: BRANCH,
+      ...(photosSha ? { sha: photosSha } : {})
+    });
+    photosSha  = res.content.sha;
+    photosData = final;
+    pendingRemoves.clear();
+    hasChanges = false;
+    saveStatus.textContent = '';
+    publishBtn.disabled = false;
+    showToast('Published! Site updates in ~60 seconds.', 'success');
+  } catch (e) {
+    saveStatus.textContent = '';
+    publishBtn.disabled = false;
+    showToast(`Publish failed: ${e.message}`, 'error');
+  }
+});
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function markChanged() {
+  hasChanges = true;
+  updateSaveStatus();
+}
+
+function updateSaveStatus() {
+  saveStatus.textContent = hasChanges ? 'Unsaved changes' : '';
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+  toast.textContent = msg;
+  toast.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+}
+
+window.addEventListener('beforeunload', e => { if (hasChanges) e.preventDefault(); });
+</script>
+
+</body>
+</html>

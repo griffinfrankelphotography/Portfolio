@@ -1,19 +1,3 @@
-const photos = [
-  // Portrait — tag: "portrait"
-  { src: "images/photo-01.jpg", title: "Untitled 01", tag: "portrait", layout: "tall" },
-  { src: "images/photo-04.jpg", title: "Untitled 04", tag: "portrait", layout: "" },
-  { src: "images/photo-08.jpg", title: "Untitled 08", tag: "portrait", layout: "" },
-
-  // City & Nature — tag: "city-nature"
-  { src: "images/photo-02.jpg", title: "Untitled 02", tag: "city-nature", layout: "wide" },
-  { src: "images/photo-07.jpg", title: "Untitled 07", tag: "city-nature", layout: "" },
-  { src: "images/photo-03.jpg", title: "Untitled 03", tag: "city-nature", layout: "" },
-
-  // Events — tag: "events"
-  { src: "images/photo-05.jpg", title: "Untitled 05", tag: "events", layout: "wide" },
-  { src: "images/photo-06.jpg", title: "Untitled 06", tag: "events", layout: "" },
-];
-
 // Year
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -57,8 +41,8 @@ if (lightbox) {
     activeIndex = i;
     const p = currentList[activeIndex];
     lightboxImg.src = p.src;
-    lightboxImg.alt = p.title;
-    lightboxCaption.textContent = p.title;
+    lightboxImg.alt = p.src;
+    if (lightboxCaption) lightboxCaption.textContent = "";
     lightbox.classList.add("is-open");
     lightbox.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -87,28 +71,28 @@ if (lightbox) {
     if (e.key === "ArrowRight") step(1);
   });
 
-  // Render a gallery grid
-  function renderGallery(gridId, tag) {
+  function renderGallery(gridId, tag, photos) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     const list = photos.filter(p => p.tag === tag);
     list.forEach((p, i) => {
       const card = document.createElement("button");
-      card.className = `card ${p.layout ? `card--${p.layout}` : ""}`.trim();
+      card.className = "card";
       card.setAttribute("type", "button");
-      card.setAttribute("aria-label", `Open ${p.title}`);
-      card.innerHTML = `
-        <img src="${p.src}" alt="${p.title}" loading="lazy" />
-        <div class="card__meta" aria-hidden="true">
-          <span class="card__title">${p.title}</span>
-        </div>
-      `;
+      card.setAttribute("aria-label", "Open photo");
+      card.innerHTML = `<img src="${p.src}" alt="" loading="lazy" />`;
       card.addEventListener("click", () => openLightbox(list, i));
       grid.appendChild(card);
     });
   }
 
-  renderGallery("grid-portrait", "portrait");
-  renderGallery("grid-city-nature", "city-nature");
-  renderGallery("grid-events", "events");
+  // Load photos from photos.json
+  fetch("photos.json")
+    .then(r => r.json())
+    .then(photos => {
+      renderGallery("grid-portrait", "portrait", photos);
+      renderGallery("grid-city-nature", "city-nature", photos);
+      renderGallery("grid-events", "events", photos);
+    })
+    .catch(() => {});
 }
