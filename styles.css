@@ -93,31 +93,85 @@ a:focus-visible, button:focus-visible{
 
 main{ width: 100%; }
 
-.hero{
-  padding: 84px 22px 32px;
+/* Transparent header variant for landing page */
+.header--transparent{
+  background: transparent;
+  border-bottom-color: transparent;
 }
-.hero__content{
+.header--transparent .brand__name,
+.header--transparent .brand__tag,
+.header--transparent .nav a,
+.header--transparent .icon-btn{
+  color: rgba(255,255,255,0.92);
+}
+.header--transparent .nav a:hover,
+.header--transparent .nav a.nav--active{
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+.header--transparent .icon-btn{
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1);
+}
+
+/* Full-screen landing section */
+.landing{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 100px 22px 48px;
+  position: relative;
+  background-image: url(images/hero.jpg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: scroll;
+}
+.landing::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(0,0,0,0.35) 0%,
+    rgba(0,0,0,0.15) 40%,
+    rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+}
+.landing > *{ position: relative; z-index: 1; }
+
+.landing__title{
   max-width: var(--max);
+  width: 100%;
   margin: 0 auto;
-  border: 1px solid var(--subtle);
-  background: linear-gradient(180deg, var(--panel), transparent);
-  border-radius: calc(var(--radius) + 8px);
-  padding: 42px 28px;
-  box-shadow: var(--shadow);
 }
-.hero h1{
-  margin: 0 0 12px;
+.landing__title h1{
+  margin: 0 0 10px;
   font-weight: 600;
-  font-size: clamp(28px, 4vw, 44px);
+  font-size: clamp(28px, 4vw, 52px);
   letter-spacing: -0.04em;
+  color: #fff;
 }
-.hero p{
-  margin: 0 0 22px;
-  color: var(--muted);
-  max-width: 58ch;
+.landing__title p{
+  margin: 0;
+  color: rgba(255,255,255,0.75);
+  font-size: 15px;
   line-height: 1.6;
 }
-.hero__actions{ display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Glassmorphic menu card variant */
+.menu-card--glass{
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.menu-card--glass .menu-card__title{ color: #fff; }
+.menu-card--glass .menu-card__sub{ color: rgba(255,255,255,0.7); }
+.menu-card--glass .menu-card__arrow{ color: rgba(255,255,255,0.6); }
+.menu-card--glass:hover{
+  background: rgba(255,255,255,0.18);
+}
+.menu-card--glass:hover .menu-card__arrow{ color: #fff; }
 
 .btn{
   display: inline-flex;
@@ -231,6 +285,7 @@ main{ width: 100%; }
 
 .menu-grid{
   max-width: var(--max);
+  width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
