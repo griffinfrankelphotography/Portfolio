@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Portrait photography by Griffin Frankel." />
+  <title>Portrait — Griffin Frankel Photography</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="index.html" aria-label="Home">
+      <span class="brand__name">Griffin Frankel</span>
+      <span class="brand__tag">Photography</span>
+    </a>
+
+    <nav class="nav">
+      <a href="portrait.html" class="nav--active">Portrait</a>
+      <a href="city-nature.html">City &amp; Nature</a>
+      <a href="events.html">Events</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">
+      <span aria-hidden="true">◐</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section__head">
+        <a class="back-link" href="index.html">← Home</a>
+        <h2>Portrait</h2>
+        <p>People and faces — click any image to view.</p>
+      </div>
+      <div class="grid" id="grid-portrait" aria-label="Portrait gallery">
+        <!-- Cards injected by script.js -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Griffin Frankel. All rights reserved.</p>
+  </footer>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <button class="lightbox__close" id="closeLightbox" aria-label="Close">✕</button>
+    <button class="lightbox__nav lightbox__nav--prev" id="prevBtn" aria-label="Previous">‹</button>
+    <figure class="lightbox__figure">
+      <img id="lightboxImg" alt="" />
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+    <button class="lightbox__nav lightbox__nav--next" id="nextBtn" aria-label="Next">›</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
