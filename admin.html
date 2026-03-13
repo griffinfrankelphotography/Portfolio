@@ -158,6 +158,11 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .staged-card__size {
+      font-size: 10px;
+      color: var(--green);
+      letter-spacing: 0.04em;
+    }
     .select {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -515,14 +520,51 @@ dropzone.addEventListener('drop', e => {
 });
 fileInput.addEventListener('change', () => { addFiles([...fileInput.files]); fileInput.value = ''; });
 
-function addFiles(files) {
-  files.forEach(file => {
+// ── Image compression ──────────────────────────────────────────────────────
+// Max long-edge 2400px, JPEG quality 0.82 — sharp on retina, ~70-85% smaller
+const MAX_PX = 2400;
+const QUALITY = 0.82;
+
+function compressImage(file) {
+  return new Promise(resolve => {
     const reader = new FileReader();
     reader.onload = e => {
-      staged.push({ file, dataUrl: e.target.result, tag: 'portrait' });
-      renderStaged();
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        const longest = Math.max(width, height);
+        if (longest > MAX_PX) {
+          const scale = MAX_PX / longest;
+          width  = Math.round(width  * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width  = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', QUALITY);
+        const compressedBytes = Math.round((dataUrl.length - 22) * 0.75); // base64 → bytes approx
+        resolve({ dataUrl, compressedBytes });
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+  });
+}
+
+function fmtBytes(b) {
+  return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB'
+       : b >= 1024    ? (b / 1024).toFixed(0) + ' KB'
+       : b + ' B';
+}
+
+function addFiles(files) {
+  files.forEach(async file => {
+    const original = file.size;
+    const { dataUrl, compressedBytes } = await compressImage(file);
+    const savings = original > 0 ? Math.round((1 - compressedBytes / original) * 100) : 0;
+    staged.push({ file, dataUrl, tag: 'portrait', original, compressedBytes, savings });
+    renderStaged();
   });
 }
 
@@ -534,10 +576,14 @@ function renderStaged() {
   staged.forEach((item, i) => {
     const card = document.createElement('div');
     card.className = 'staged-card';
+    const sizeLabel = item.savings > 0
+      ? `${fmtBytes(item.compressedBytes)} · ${item.savings}% smaller`
+      : fmtBytes(item.compressedBytes);
     card.innerHTML = `
       <img src="${item.dataUrl}" alt="">
       <div class="staged-card__footer">
         <div class="staged-card__name">${item.file.name}</div>
+        <div class="staged-card__size">${sizeLabel}</div>
         <select class="select" data-i="${i}">
           <option value="portrait">Portrait</option>
           <option value="city-nature">City &amp; Nature</option>
@@ -568,7 +614,7 @@ uploadBtn.addEventListener('click', async () => {
   const uploaded = [];
 
   for (const item of staged) {
-    const filename = item.file.name.replace(/\s+/g, '-');
+    const filename = item.file.name.replace(/\s+/g, '-').replace(/\.[^.]+$/, '.jpg');
     const path = `images/${filename}`;
     progressLabel.textContent = `Uploading ${filename}…`;
 
