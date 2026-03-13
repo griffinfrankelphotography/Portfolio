@@ -1,10 +1,38 @@
 [
-  { "src": "images/photo-01.jpg", "tag": "portrait" },
-  { "src": "images/photo-04.jpg", "tag": "portrait" },
-  { "src": "images/photo-08.jpg", "tag": "portrait" },
-  { "src": "images/photo-02.jpg", "tag": "city-nature" },
-  { "src": "images/photo-07.jpg", "tag": "city-nature" },
-  { "src": "images/photo-03.jpg", "tag": "city-nature" },
-  { "src": "images/photo-05.jpg", "tag": "events" },
-  { "src": "images/photo-06.jpg", "tag": "events" }
+  {
+    "src": "images/photo-01.jpg",
+    "tag": "portrait"
+  },
+  {
+    "src": "images/photo-04.jpg",
+    "tag": "portrait"
+  },
+  {
+    "src": "images/photo-08.jpg",
+    "tag": "portrait"
+  },
+  {
+    "src": "images/photo-02.jpg",
+    "tag": "city-nature"
+  },
+  {
+    "src": "images/photo-07.jpg",
+    "tag": "city-nature"
+  },
+  {
+    "src": "images/photo-03.jpg",
+    "tag": "city-nature"
+  },
+  {
+    "src": "images/photo-05.jpg",
+    "tag": "events"
+  },
+  {
+    "src": "images/photo-06.jpg",
+    "tag": "events"
+  },
+  {
+    "src": "images/2T7A1469.jpeg",
+    "tag": "events"
+  }
 ]
