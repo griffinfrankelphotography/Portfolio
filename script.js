@@ -71,43 +71,69 @@ if (lightbox) {
     if (e.key === "ArrowRight") step(1);
   });
 
-  function applyAspect(card, aspect) {
-    card.style.aspectRatio = String(aspect);
-    card.style.gridColumn  = aspect > 1.1 ? "span 2" : "span 1";
-  }
+  const GAP = 3;
 
   function renderGallery(gridId, tag, photos) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     const list = photos.filter(p => p.tag === tag);
-    list.forEach((p, i) => {
-      const card = document.createElement("button");
-      card.className = "card";
-      card.setAttribute("type", "button");
-      card.setAttribute("aria-label", "Open photo");
+    if (!list.length) return;
 
-      const img = document.createElement("img");
-      img.alt = "";
+    let rafId;
 
-      if (p.aspect) {
-        // Stored aspect — apply immediately, lazy-load the image
-        applyAspect(card, p.aspect);
-        img.loading = "lazy";
-      } else {
-        // Legacy photo — probe natural dimensions before showing
-        card.style.aspectRatio = "4/5"; // placeholder to reserve space
-        img.loading = "eager";
-        img.onload = () => {
-          const a = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
-          applyAspect(card, a);
-        };
-      }
+    function layout() {
+      const totalW = grid.clientWidth;
+      if (!totalW) return;
 
-      img.src = p.src;
-      card.appendChild(img);
-      card.addEventListener("click", () => openLightbox(list, i));
-      grid.appendChild(card);
-    });
+      const cols = totalW >= 600 ? 3 : 2;
+      const colW  = (totalW - GAP * (cols - 1)) / cols;
+      const colH  = new Array(cols).fill(0);
+
+      grid.innerHTML = "";
+
+      list.forEach((p, i) => {
+        const aspect = p.aspect || 0.75;
+        const h      = Math.round(colW / aspect);
+        const col    = colH.indexOf(Math.min(...colH));
+
+        const card = document.createElement("button");
+        card.className = "card";
+        card.style.cssText =
+          `width:${colW}px;height:${h}px;top:${colH[col]}px;left:${col * (colW + GAP)}px`;
+        card.setAttribute("type", "button");
+        card.setAttribute("aria-label", "Open photo");
+
+        const img = document.createElement("img");
+        img.alt     = "";
+        img.loading = i < cols * 2 ? "eager" : "lazy";
+        img.src     = p.src;
+
+        // Legacy photo without stored aspect — detect and re-layout once
+        if (!p.aspect) {
+          img.onload = () => {
+            p.aspect = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(layout);
+          };
+        }
+
+        card.appendChild(img);
+        card.addEventListener("click", () => openLightbox(list, i));
+        grid.appendChild(card);
+        colH[col] += h + GAP;
+      });
+
+      grid.style.height = Math.max(...colH) + "px";
+    }
+
+    layout();
+
+    // Recompute on container resize (debounced)
+    let resizeTimer;
+    new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(layout, 80);
+    }).observe(grid);
   }
 
   // Load photos from photos.json
