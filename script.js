@@ -85,9 +85,9 @@ if (lightbox) {
       const totalW = grid.clientWidth;
       if (!totalW) return;
 
-      const cols = totalW >= 600 ? 3 : 2;
-      const colW  = (totalW - GAP * (cols - 1)) / cols;
-      const colH  = new Array(cols).fill(0);
+      const cols  = totalW >= 600 ? 3 : 2;
+      const colW  = (totalW - GAP * (cols + 1)) / cols;
+      const colH  = new Array(cols).fill(GAP); // start each column GAP from top
 
       grid.innerHTML = "";
 
@@ -99,7 +99,7 @@ if (lightbox) {
         const card = document.createElement("button");
         card.className = "card";
         card.style.cssText =
-          `width:${colW}px;height:${h}px;top:${colH[col]}px;left:${col * (colW + GAP)}px`;
+          `width:${colW}px;height:${h}px;top:${colH[col]}px;left:${GAP + col * (colW + GAP)}px`;
         card.setAttribute("type", "button");
         card.setAttribute("aria-label", "Open photo");
 
