@@ -18,19 +18,26 @@ const photos = [
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-// Theme toggle
-const themeBtn = document.getElementById("themeBtn");
-const root = document.documentElement;
-
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme) root.setAttribute("data-theme", savedTheme);
-
-themeBtn.addEventListener("click", () => {
-  const current = root.getAttribute("data-theme") || "dark";
-  const next = current === "dark" ? "light" : "dark";
-  root.setAttribute("data-theme", next);
-  localStorage.setItem("theme", next);
-});
+// Menu overlay
+const menuBtn = document.getElementById("menuBtn");
+const menuClose = document.getElementById("menuClose");
+const navOverlay = document.getElementById("navOverlay");
+if (menuBtn && navOverlay) {
+  menuBtn.addEventListener("click", () => {
+    navOverlay.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  });
+  menuClose.addEventListener("click", () => {
+    navOverlay.classList.remove("is-open");
+    document.body.style.overflow = "";
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && navOverlay.classList.contains("is-open")) {
+      navOverlay.classList.remove("is-open");
+      document.body.style.overflow = "";
+    }
+  });
+}
 
 // Lightbox
 const lightbox = document.getElementById("lightbox");
