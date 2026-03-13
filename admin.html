@@ -544,7 +544,7 @@ function compressImage(file) {
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
         const dataUrl = canvas.toDataURL('image/jpeg', QUALITY);
         const compressedBytes = Math.round((dataUrl.length - 22) * 0.75); // base64 → bytes approx
-        resolve({ dataUrl, compressedBytes });
+        resolve({ dataUrl, compressedBytes, w: width, h: height });
       };
       img.src = e.target.result;
     };
@@ -561,9 +561,9 @@ function fmtBytes(b) {
 function addFiles(files) {
   files.forEach(async file => {
     const original = file.size;
-    const { dataUrl, compressedBytes } = await compressImage(file);
+    const { dataUrl, compressedBytes, w, h } = await compressImage(file);
     const savings = original > 0 ? Math.round((1 - compressedBytes / original) * 100) : 0;
-    staged.push({ file, dataUrl, tag: 'portrait', original, compressedBytes, savings });
+    staged.push({ file, dataUrl, tag: 'portrait', original, compressedBytes, savings, w, h });
     renderStaged();
   });
 }
@@ -629,7 +629,7 @@ uploadBtn.addEventListener('click', async () => {
         ...(sha ? { sha } : {})
       });
 
-      uploaded.push({ src: path, tag: item.tag });
+      uploaded.push({ src: path, tag: item.tag, aspect: parseFloat((item.w / item.h).toFixed(3)) });
     } catch (e) {
       showToast(`Failed: ${filename} — ${e.message}`, 'error');
     }

@@ -71,29 +71,18 @@ if (lightbox) {
     if (e.key === "ArrowRight") step(1);
   });
 
-  // Brickwork pattern — period of 6, tiles gap-free in a 3-col grid with dense packing:
-  // Row 1: portrait(1col) + landscape(2col)
-  // Row 2: landscape(2col) + tall-portrait(1col)
-  // Row 3: portrait(1col) + portrait(1col) + portrait(1col)
-  const BRICK = [
-    { span: 1, ratio: "3/4"  },  // portrait
-    { span: 2, ratio: "16/9" },  // landscape
-    { span: 2, ratio: "3/2"  },  // landscape (slightly squarer)
-    { span: 1, ratio: "2/3"  },  // tall portrait
-    { span: 1, ratio: "3/4"  },  // portrait
-    { span: 1, ratio: "5/6"  },  // standard portrait
-  ];
-
   function renderGallery(gridId, tag, photos) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     const list = photos.filter(p => p.tag === tag);
     list.forEach((p, i) => {
-      const { span, ratio } = BRICK[i % BRICK.length];
+      // Use stored aspect ratio; fall back to portrait default
+      const aspect = p.aspect || 0.8;
+      const isLandscape = aspect > 1.1;
       const card = document.createElement("button");
       card.className = "card";
-      card.style.gridColumn = `span ${span}`;
-      card.style.aspectRatio = ratio;
+      card.style.gridColumn = isLandscape ? "span 2" : "span 1";
+      card.style.aspectRatio = String(aspect);
       card.setAttribute("type", "button");
       card.setAttribute("aria-label", "Open photo");
       card.innerHTML = `<img src="${p.src}" alt="" loading="lazy" />`;
