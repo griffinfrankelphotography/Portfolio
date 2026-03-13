@@ -156,27 +156,8 @@ main{ width: 100%; }
   line-height: 1.6;
 }
 
-.filters{
-  max-width: var(--max);
-  margin: 14px auto 18px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.chip{
-  border: 1px solid var(--subtle);
-  background: transparent;
-  color: var(--muted);
-  padding: 9px 12px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
-}
-.chip:hover{ transform: translateY(-1px); color: var(--text); }
-.chip.is-active{
-  background: var(--panel);
-  color: var(--text);
+.section--bordered{
+  border-top: 1px solid var(--subtle);
 }
 
 .grid{
