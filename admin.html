@@ -334,7 +334,10 @@
   <hr class="divider">
 
   <!-- Existing galleries -->
-  <p class="section-label">Current Galleries</p>
+  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px">
+    <p class="section-label" style="margin-bottom:0">Current Galleries</p>
+    <button class="btn btn--ghost" id="backfillBtn" style="font-size:10px;padding:7px 14px" title="Detect and save aspect ratios for photos that are missing them">Fix orientations</button>
+  </div>
 
   <div class="gallery-section">
     <div class="gallery-section__title">Portrait</div>
@@ -544,7 +547,7 @@ function compressImage(file) {
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
         const dataUrl = canvas.toDataURL('image/jpeg', QUALITY);
         const compressedBytes = Math.round((dataUrl.length - 22) * 0.75); // base64 → bytes approx
-        resolve({ dataUrl, compressedBytes });
+        resolve({ dataUrl, compressedBytes, w: width, h: height });
       };
       img.src = e.target.result;
     };
@@ -561,9 +564,9 @@ function fmtBytes(b) {
 function addFiles(files) {
   files.forEach(async file => {
     const original = file.size;
-    const { dataUrl, compressedBytes } = await compressImage(file);
+    const { dataUrl, compressedBytes, w, h } = await compressImage(file);
     const savings = original > 0 ? Math.round((1 - compressedBytes / original) * 100) : 0;
-    staged.push({ file, dataUrl, tag: 'portrait', original, compressedBytes, savings });
+    staged.push({ file, dataUrl, tag: 'portrait', original, compressedBytes, savings, w, h });
     renderStaged();
   });
 }
@@ -629,7 +632,7 @@ uploadBtn.addEventListener('click', async () => {
         ...(sha ? { sha } : {})
       });
 
-      uploaded.push({ src: path, tag: item.tag });
+      uploaded.push({ src: path, tag: item.tag, aspect: parseFloat((item.w / item.h).toFixed(3)) });
     } catch (e) {
       showToast(`Failed: ${filename} — ${e.message}`, 'error');
     }
@@ -702,6 +705,38 @@ function showToast(msg, type = '') {
 }
 
 window.addEventListener('beforeunload', e => { if (hasChanges) e.preventDefault(); });
+
+// ── Backfill aspect ratios for legacy photos ───────────────────────────────
+document.getElementById('backfillBtn').addEventListener('click', async () => {
+  if (!token) { showToast('Connect your GitHub token first', 'error'); return; }
+  const missing = photosData.filter(p => !p.aspect);
+  if (missing.length === 0) { showToast('All photos already have orientation data.', 'success'); return; }
+
+  const btn = document.getElementById('backfillBtn');
+  btn.disabled = true;
+  btn.textContent = `Detecting…`;
+
+  let fixed = 0;
+  await Promise.all(missing.map(p => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      p.aspect = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
+      fixed++;
+      resolve();
+    };
+    img.onerror = resolve; // skip if image can't load
+    img.src = p.src;
+  })));
+
+  btn.textContent = 'Fix orientations';
+  btn.disabled = false;
+
+  if (fixed === 0) { showToast('Could not detect any images — are they uploaded?', 'error'); return; }
+
+  markChanged();
+  renderExisting();
+  showToast(`Detected ${fixed} photo${fixed > 1 ? 's' : ''}. Click Publish to save.`, 'success');
+});
 </script>
 
 </body>

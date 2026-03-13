@@ -71,32 +71,40 @@ if (lightbox) {
     if (e.key === "ArrowRight") step(1);
   });
 
-  // Brickwork pattern — period of 6, tiles gap-free in a 3-col grid with dense packing:
-  // Row 1: portrait(1col) + landscape(2col)
-  // Row 2: landscape(2col) + tall-portrait(1col)
-  // Row 3: portrait(1col) + portrait(1col) + portrait(1col)
-  const BRICK = [
-    { span: 1, ratio: "3/4"  },  // portrait
-    { span: 2, ratio: "16/9" },  // landscape
-    { span: 2, ratio: "3/2"  },  // landscape (slightly squarer)
-    { span: 1, ratio: "2/3"  },  // tall portrait
-    { span: 1, ratio: "3/4"  },  // portrait
-    { span: 1, ratio: "5/6"  },  // standard portrait
-  ];
+  function applyAspect(card, aspect) {
+    card.style.aspectRatio = String(aspect);
+    card.style.gridColumn  = aspect > 1.1 ? "span 2" : "span 1";
+  }
 
   function renderGallery(gridId, tag, photos) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
     const list = photos.filter(p => p.tag === tag);
     list.forEach((p, i) => {
-      const { span, ratio } = BRICK[i % BRICK.length];
       const card = document.createElement("button");
       card.className = "card";
-      card.style.gridColumn = `span ${span}`;
-      card.style.aspectRatio = ratio;
       card.setAttribute("type", "button");
       card.setAttribute("aria-label", "Open photo");
-      card.innerHTML = `<img src="${p.src}" alt="" loading="lazy" />`;
+
+      const img = document.createElement("img");
+      img.alt = "";
+
+      if (p.aspect) {
+        // Stored aspect — apply immediately, lazy-load the image
+        applyAspect(card, p.aspect);
+        img.loading = "lazy";
+      } else {
+        // Legacy photo — probe natural dimensions before showing
+        card.style.aspectRatio = "4/5"; // placeholder to reserve space
+        img.loading = "eager";
+        img.onload = () => {
+          const a = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
+          applyAspect(card, a);
+        };
+      }
+
+      img.src = p.src;
+      card.appendChild(img);
       card.addEventListener("click", () => openLightbox(list, i));
       grid.appendChild(card);
     });
