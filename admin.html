@@ -370,6 +370,7 @@ let photosSha       = '';   // sha for update requests
 let staged          = [];   // files picked but not yet uploaded
 let pendingRemoves  = new Set();
 let hasChanges      = false;
+let localPreviews   = {};   // src → dataUrl for just-uploaded photos (before GH Pages deploys)
 
 // ── DOM ────────────────────────────────────────────────────────────────────
 const tokenInput   = document.getElementById('tokenInput');
@@ -491,7 +492,7 @@ function renderExisting() {
       const card = document.createElement('div');
       card.className = 'existing-card' + (removed ? ' existing-card--removed' : '');
       card.innerHTML = `
-        <img src="${p.src}" alt="${filename}" loading="lazy">
+        <img src="${localPreviews[p.src] || p.src}" alt="${filename}" loading="lazy">
         <button class="existing-card__remove" title="Remove">✕</button>
         <div class="existing-card__undo">Undo</div>
         <div class="existing-card__label">${filename}</div>
@@ -633,6 +634,7 @@ uploadBtn.addEventListener('click', async () => {
       });
 
       uploaded.push({ src: path, tag: item.tag, aspect: parseFloat((item.w / item.h).toFixed(3)) });
+      localPreviews[path] = item.dataUrl; // use local copy until GH Pages deploys
     } catch (e) {
       showToast(`Failed: ${filename} — ${e.message}`, 'error');
     }
