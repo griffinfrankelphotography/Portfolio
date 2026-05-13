@@ -71,6 +71,16 @@ if (lightbox) {
     if (e.key === "ArrowRight") step(1);
   });
 
+  // Swipe to navigate on touch devices
+  let touchStartX = 0;
+  lightbox.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  lightbox.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
   const GAP = 10;
 
   function renderGallery(gridId, tag, photos) {
