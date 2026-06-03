@@ -83,10 +83,21 @@ if (lightbox) {
 
   const GAP = 10;
 
+  // Fisher–Yates shuffle — returns a new randomized array
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
   function renderGallery(gridId, tag, photos) {
     const grid = document.getElementById(gridId);
     if (!grid) return;
-    const list = photos.filter(p => p.tag === tag);
+    // Shuffle once per page load; resizing reuses this same order
+    const list = shuffle(photos.filter(p => p.tag === tag));
     if (!list.length) return;
 
     let rafId;
