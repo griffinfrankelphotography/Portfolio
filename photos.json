@@ -38,5 +38,10 @@
     "src": "images/IMG_1616.jpg",
     "tag": "portrait",
     "aspect": 0.663
+  },
+  {
+    "src": "images/2T7A2432.jpg",
+    "tag": "city-nature",
+    "aspect": 1.499
   }
 ]
