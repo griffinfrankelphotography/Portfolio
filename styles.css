@@ -292,6 +292,26 @@ main{ width: 100%; }
   color: var(--text);
 }
 
+.about--split{
+  max-width: 980px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px;
+  align-items: center;
+  text-align: left;
+  padding: 64px 24px 40px;
+}
+.about__photo{
+  margin: 0;
+}
+.about__photo img{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
 .contact{
   max-width: 980px;
   margin: 0 auto;
@@ -429,6 +449,12 @@ main{ width: 100%; }
   .landing__content{ padding: 0 20px 44px; }
   .page-head{ padding: 36px 16px 10px; }
   .about{ padding: 52px 20px 28px; }
+  .about--split{
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: center;
+    padding: 48px 20px 28px;
+  }
   .contact{ grid-template-columns: 1fr; padding: 8px 16px 56px; }
 
   /* Lightbox: float nav buttons over image so it fills the screen */
