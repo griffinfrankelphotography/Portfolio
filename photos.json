@@ -53,5 +53,10 @@
     "src": "images/2T7A2433.jpg",
     "tag": "city-nature",
     "aspect": 1.499
+  },
+  {
+    "src": "images/2T7A1190.jpg",
+    "tag": "portrait",
+    "aspect": 0.667
   }
 ]
