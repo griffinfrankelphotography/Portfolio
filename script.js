@@ -81,7 +81,7 @@ if (lightbox) {
     if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
   }, { passive: true });
 
-  const GAP = 10;
+  const GAP = 12;
 
   // Fisher–Yates shuffle — returns a new randomized array
   function shuffle(arr) {
@@ -114,6 +114,11 @@ if (lightbox) {
       img.alt     = "";
       img.loading = i < 6 ? "eager" : "lazy";
       img.src     = p.src;
+
+      // Fade in once pixels are ready (covers cached images too)
+      const reveal = () => img.classList.add("is-loaded");
+      if (img.complete && img.naturalWidth) reveal();
+      else img.addEventListener("load", reveal);
 
       // Legacy photo without stored aspect — detect and re-layout once
       if (!p.aspect) {
