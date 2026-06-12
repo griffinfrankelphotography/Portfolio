@@ -237,6 +237,31 @@ main{ width: 100%; }
   line-height: 1;
 }
 
+/* ── IMAGE PROTECTION ── */
+/* Deters casual saving: no drag ghost, no long-press save sheet on iOS,
+   and a transparent shield over photos so the context menu and taps
+   never target the <img> itself */
+.card img,
+.lightbox img,
+.about__photo img{
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.card::after,
+.about__photo::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.lightbox__figure{ position: relative; }
+.lightbox__figure::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
 /* ── GALLERY GRID ── */
 .grid{
   position: relative;
@@ -303,6 +328,7 @@ main{ width: 100%; }
 }
 .about__photo{
   margin: 0;
+  position: relative;
 }
 .about__photo img{
   width: 100%;

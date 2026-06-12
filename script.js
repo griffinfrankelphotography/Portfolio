@@ -23,6 +23,15 @@ if (menuBtn && navOverlay) {
   });
 }
 
+// Image download deterrents (SmugMug-style): block right-click save, drag
+// to desktop, and long-press save on photos. Screenshots can't be blocked.
+document.addEventListener("contextmenu", (e) => {
+  if (e.target.closest(".card, .lightbox__figure, .about__photo")) e.preventDefault();
+});
+document.addEventListener("dragstart", (e) => {
+  if (e.target.tagName === "IMG") e.preventDefault();
+});
+
 // Lightbox
 const lightbox = document.getElementById("lightbox");
 
@@ -111,9 +120,10 @@ if (lightbox) {
       card.setAttribute("aria-label", "Open photo");
 
       const img = document.createElement("img");
-      img.alt     = "";
-      img.loading = i < 6 ? "eager" : "lazy";
-      img.src     = p.src;
+      img.alt       = "";
+      img.draggable = false;
+      img.loading   = i < 6 ? "eager" : "lazy";
+      img.src       = p.src;
 
       // Fade in once pixels are ready (covers cached images too)
       const reveal = () => img.classList.add("is-loaded");
