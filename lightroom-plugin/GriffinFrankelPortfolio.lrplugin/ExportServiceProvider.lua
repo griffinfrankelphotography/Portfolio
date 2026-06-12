@@ -252,8 +252,11 @@ function exportServiceProvider.processRenderedPhotos(functionContext, exportCont
     return
   end
 
-  -- Load the current gallery index up front so we fail fast on a bad token
-  local okFetch, photosOrErr, photosSha = pcall(fetchPhotosJson, token)
+  -- Load the current gallery index up front so we fail fast on a bad token.
+  -- LrTasks.pcall, not pcall: LrHttp yields, and Lightroom's Lua cannot
+  -- yield across a plain pcall ("Yielding is not allowed within a C or
+  -- metamethod call")
+  local okFetch, photosOrErr, photosSha = LrTasks.pcall(fetchPhotosJson, token)
   if not okFetch then
     LrDialogs.message('Griffin Frankel Portfolio',
       'Could not load photos.json: ' .. tostring(photosOrErr), 'critical')
@@ -271,7 +274,7 @@ function exportServiceProvider.processRenderedPhotos(functionContext, exportCont
       progressScope:setCaption('Uploading ' .. fileName .. ' (' .. i .. ' of ' .. nPhotos .. ')')
 
       local fileData = LrFileUtils.readFile(pathOrMessage)
-      local okUpload, err = pcall(uploadImage, token,
+      local okUpload, err = LrTasks.pcall(uploadImage, token,
         'images/' .. fileName, LrStringUtils.encodeBase64(fileData), fileName)
 
       if okUpload then
@@ -302,7 +305,7 @@ function exportServiceProvider.processRenderedPhotos(functionContext, exportCont
         photosData[#photosData + 1] = p
       end
     end
-    local okPut, err = pcall(putPhotosJson, token, photosData, photosSha)
+    local okPut, err = LrTasks.pcall(putPhotosJson, token, photosData, photosSha)
     if not okPut then
       failed[#failed + 1] = 'photos.json update — ' .. tostring(err)
     end
