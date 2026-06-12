@@ -12,6 +12,8 @@
 
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="styles.css" />
+  <!-- Landing photo is a CSS background; preload so it isn't discovered late -->
+  <link rel="preload" as="image" href="images/IMG_1759.jpeg" />
 </head>
 <body>
   <header class="header">
@@ -29,7 +31,7 @@
       <li><a href="portrait.html">People</a></li>
       <li><a href="city-nature.html">City &amp; Nature</a></li>
       <li><a href="events.html">Events</a></li>
-      <div class="nav-overlay__divider"></div>
+      <li class="nav-overlay__divider" aria-hidden="true"></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
   </nav>
