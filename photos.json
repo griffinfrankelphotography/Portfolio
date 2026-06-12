@@ -40,11 +40,6 @@
     "aspect": 0.663
   },
   {
-    "src": "images/2T7A2421.jpg",
-    "tag": "city-nature",
-    "aspect": 1.499
-  },
-  {
     "src": "images/2T7A2686.jpg",
     "tag": "city-nature",
     "aspect": 1.499
@@ -53,15 +48,5 @@
     "src": "images/2T7A2553.jpg",
     "tag": "city-nature",
     "aspect": 0.667
-  },
-  {
-    "src": "images/2T7A2388.jpg",
-    "tag": "city-nature",
-    "aspect": 1.499
-  },
-  {
-    "src": "images/2T7A2389.jpg",
-    "tag": "city-nature",
-    "aspect": 1.499
   }
 ]
