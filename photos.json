@@ -63,5 +63,15 @@
     "src": "images/2T7A1301.jpg",
     "tag": "portrait",
     "aspect": 1.499
+  },
+  {
+    "src": "images/IMG_0245.jpg",
+    "tag": "city-nature",
+    "aspect": 1.333
+  },
+  {
+    "src": "images/IMG_4961.jpg",
+    "tag": "portrait",
+    "aspect": 1.5
   }
 ]
