@@ -41,7 +41,7 @@ if (lightbox) {
     activeIndex = i;
     const p = currentList[activeIndex];
     lightboxImg.src = p.src;
-    lightboxImg.alt = p.src;
+    lightboxImg.alt = "";
     if (lightboxCaption) lightboxCaption.textContent = "";
     lightbox.classList.add("is-open");
     lightbox.setAttribute("aria-hidden", "false");
@@ -102,6 +102,34 @@ if (lightbox) {
 
     let rafId;
 
+    // Build cards once; layout() only positions them, so resizing
+    // never recreates <img> elements or retriggers loads
+    const cards = list.map((p, i) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "card";
+      card.setAttribute("aria-label", "Open photo");
+
+      const img = document.createElement("img");
+      img.alt     = "";
+      img.loading = i < 6 ? "eager" : "lazy";
+      img.src     = p.src;
+
+      // Legacy photo without stored aspect — detect and re-layout once
+      if (!p.aspect) {
+        img.onload = () => {
+          p.aspect = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(layout);
+        };
+      }
+
+      card.appendChild(img);
+      card.addEventListener("click", () => openLightbox(list, i));
+      grid.appendChild(card);
+      return card;
+    });
+
     function layout() {
       const totalW = grid.clientWidth;
       if (!totalW) return;
@@ -110,37 +138,13 @@ if (lightbox) {
       const colW  = (totalW - GAP * (cols + 1)) / cols;
       const colH  = new Array(cols).fill(GAP); // start each column GAP from top
 
-      grid.innerHTML = "";
-
       list.forEach((p, i) => {
         const aspect = p.aspect || 0.75;
         const h      = Math.round(colW / aspect);
         const col    = colH.indexOf(Math.min(...colH));
 
-        const card = document.createElement("button");
-        card.className = "card";
-        card.style.cssText =
+        cards[i].style.cssText =
           `width:${colW}px;height:${h}px;top:${colH[col]}px;left:${GAP + col * (colW + GAP)}px`;
-        card.setAttribute("type", "button");
-        card.setAttribute("aria-label", "Open photo");
-
-        const img = document.createElement("img");
-        img.alt     = "";
-        img.loading = i < cols * 2 ? "eager" : "lazy";
-        img.src     = p.src;
-
-        // Legacy photo without stored aspect — detect and re-layout once
-        if (!p.aspect) {
-          img.onload = () => {
-            p.aspect = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
-            cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(layout);
-          };
-        }
-
-        card.appendChild(img);
-        card.addEventListener("click", () => openLightbox(list, i));
-        grid.appendChild(card);
         colH[col] += h + GAP;
       });
 
