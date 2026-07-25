@@ -220,7 +220,7 @@ main{ width: 100%; }
 .landing{
   position: relative;
   height: calc(100vh - 96px);
-  background-image: url(images/IMG_1759.jpeg);
+  background-color: var(--bg);
   background-size: cover;
   background-position: center;
   display: flex;

@@ -278,6 +278,28 @@
     .toast.success { border-color: var(--green); color: var(--green); }
     .toast.error { border-color: var(--red); color: var(--red); }
 
+    /* ── Homepage background ── */
+    .bg-manager {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .bg-preview {
+      aspect-ratio: 16 / 10;
+      background: #1a1a1a center / cover no-repeat;
+      border: 1px solid var(--border);
+    }
+    .bg-preview__empty {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--muted);
+    }
+    .bg-actions { display: flex; align-items: center; gap: 14px; }
+    @media (max-width: 640px) {
+      .bg-manager { grid-template-columns: 1fr; }
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -354,6 +376,29 @@
     <div class="existing-grid" id="existing-events"></div>
   </div>
 
+  <hr class="divider">
+
+  <!-- Homepage background -->
+  <p class="section-label">Homepage Background</p>
+  <div class="bg-manager">
+    <div class="bg-preview" id="bgPreview">
+      <div class="bg-preview__empty">No image</div>
+    </div>
+    <div>
+      <div class="dropzone" id="bgDropzone" style="margin-bottom:16px">
+        <input type="file" id="bgFileInput" accept="image/*" style="display:none">
+        <div class="dropzone__text">
+          <strong>Choose a new background</strong>
+          <span>Landscape / wide images look best here</span>
+        </div>
+      </div>
+      <div class="bg-actions">
+        <button class="btn" id="bgUpdateBtn" disabled>Update Background</button>
+        <span id="bgStatus" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -371,6 +416,9 @@ let staged          = [];   // files picked but not yet uploaded
 let pendingRemoves  = new Set();
 let hasChanges      = false;
 let localPreviews   = {};   // src → dataUrl for just-uploaded photos (before GH Pages deploys)
+let siteData        = { landing: '' };  // site.json contents
+let siteSha         = '';   // sha for site.json updates
+let bgStaged        = null; // { dataUrl, name } for a chosen-but-not-saved background
 
 // ── DOM ────────────────────────────────────────────────────────────────────
 const tokenInput   = document.getElementById('tokenInput');
@@ -389,12 +437,18 @@ const progress     = document.getElementById('progress');
 const progressFill = document.getElementById('progressFill');
 const progressLabel= document.getElementById('progressLabel');
 const toast        = document.getElementById('toast');
+const bgPreview    = document.getElementById('bgPreview');
+const bgDropzone   = document.getElementById('bgDropzone');
+const bgFileInput  = document.getElementById('bgFileInput');
+const bgUpdateBtn  = document.getElementById('bgUpdateBtn');
+const bgStatus     = document.getElementById('bgStatus');
 
 // ── Boot ───────────────────────────────────────────────────────────────────
 if (token) {
   tokenInput.value = '•'.repeat(20);
   setTokenUI(true);
   loadPhotos();
+  loadSite();
 }
 
 // ── Token ──────────────────────────────────────────────────────────────────
@@ -406,6 +460,7 @@ saveTokenBtn.addEventListener('click', () => {
   tokenInput.value = '•'.repeat(20);
   setTokenUI(true);
   loadPhotos();
+  loadSite();
 });
 
 clearTokenBtn.addEventListener('click', () => {
@@ -738,6 +793,89 @@ document.getElementById('backfillBtn').addEventListener('click', async () => {
   markChanged();
   renderExisting();
   showToast(`Detected ${fixed} photo${fixed > 1 ? 's' : ''}. Click Publish to save.`, 'success');
+});
+
+// ── Homepage background ─────────────────────────────────────────────────────
+async function loadSite() {
+  try {
+    const data = await ghGet(`/repos/${REPO}/contents/site.json?ref=${BRANCH}`);
+    siteSha  = data.sha;
+    siteData = JSON.parse(atob(data.content.replace(/\s/g, '')));
+  } catch (e) {
+    // No site.json yet — fall back to the current default
+    siteData = { landing: 'images/IMG_1759.jpeg' };
+    siteSha  = '';
+  }
+  renderBg();
+}
+
+function renderBg() {
+  const src = (bgStaged && bgStaged.dataUrl) || siteData.landing || '';
+  if (src) {
+    bgPreview.style.backgroundImage = `url("${src}")`;
+    bgPreview.innerHTML = '';
+  } else {
+    bgPreview.style.backgroundImage = 'none';
+    bgPreview.innerHTML = '<div class="bg-preview__empty">No image</div>';
+  }
+}
+
+bgDropzone.addEventListener('click', () => bgFileInput.click());
+bgDropzone.addEventListener('dragover', e => { e.preventDefault(); bgDropzone.classList.add('drag-over'); });
+bgDropzone.addEventListener('dragleave', () => bgDropzone.classList.remove('drag-over'));
+bgDropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  bgDropzone.classList.remove('drag-over');
+  const f = [...e.dataTransfer.files].find(f => f.type.startsWith('image/'));
+  if (f) pickBg(f);
+});
+bgFileInput.addEventListener('change', () => { if (bgFileInput.files[0]) pickBg(bgFileInput.files[0]); bgFileInput.value = ''; });
+
+async function pickBg(file) {
+  bgStatus.textContent = 'Processing…';
+  const { dataUrl } = await compressImage(file);
+  bgStaged = { dataUrl, name: file.name };
+  bgUpdateBtn.disabled = false;
+  bgStatus.textContent = 'Ready — click Update Background';
+  renderBg();
+}
+
+bgUpdateBtn.addEventListener('click', async () => {
+  if (!token) { showToast('Connect your GitHub token first', 'error'); return; }
+  if (!bgStaged) return;
+
+  bgUpdateBtn.disabled = true;
+  bgStatus.textContent = 'Uploading…';
+
+  // Unique filename so the homepage always fetches the fresh image (no cache issues)
+  const path = `images/home-${Date.now()}.jpg`;
+
+  try {
+    await ghPut(`/repos/${REPO}/contents/${path}`, {
+      message: 'Update homepage background image',
+      content: bgStaged.dataUrl.split(',')[1],
+      branch: BRANCH
+    });
+
+    siteData.landing = path;
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
+    const res = await ghPut(`/repos/${REPO}/contents/site.json`, {
+      message: 'Update homepage background',
+      content,
+      branch: BRANCH,
+      ...(siteSha ? { sha: siteSha } : {})
+    });
+
+    siteSha = res.content.sha;
+    bgStaged = null;
+    bgStatus.textContent = '';
+    renderBg();
+    showToast('Background updated! Homepage refreshes in ~60 seconds.', 'success');
+  } catch (e) {
+    bgUpdateBtn.disabled = false;
+    bgStatus.textContent = '';
+    showToast(`Update failed: ${e.message}`, 'error');
+  }
 });
 </script>
 

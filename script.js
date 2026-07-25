@@ -2,6 +2,17 @@
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+// Homepage background (from site.json, so it can be changed via the admin)
+const landingEl = document.querySelector(".landing");
+if (landingEl) {
+  fetch("site.json")
+    .then(r => r.json())
+    .then(cfg => {
+      if (cfg && cfg.landing) landingEl.style.backgroundImage = `url("${cfg.landing}")`;
+    })
+    .catch(() => {});
+}
+
 // Menu overlay
 const menuBtn = document.getElementById("menuBtn");
 const menuClose = document.getElementById("menuClose");
