@@ -12,11 +12,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=5" />
   <!-- Landing photo is a CSS background; preload so it isn't discovered late -->
   <link rel="preload" as="image" href="images/IMG_1759.jpeg" />
+  <!-- Skip the intro splash if it's already played this session (runs before paint) -->
+  <script>
+    try { if (sessionStorage.getItem('introSeen')) document.documentElement.classList.add('intro-seen'); } catch (e) {}
+  </script>
 </head>
 <body>
+  <div class="intro" id="intro" aria-hidden="true">
+    <h1 class="intro__title">
+      <span>Griffin Frankel</span>
+      <span class="intro__sub">Photography</span>
+    </h1>
+  </div>
+
   <header class="header">
     <div></div>
     <a class="brand" href="index.html" aria-label="Home">
@@ -51,5 +62,19 @@
   </main>
 
   <script src="script.js?v=4"></script>
+  <script>
+    // Remove the splash from the DOM after it fades, and mark it seen for this session
+    (function () {
+      var intro = document.getElementById('intro');
+      if (!intro) return;
+      if (document.documentElement.classList.contains('intro-seen')) { intro.remove(); return; }
+      try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
+      intro.addEventListener('animationend', function (e) {
+        if (e.animationName === 'introFade') intro.remove();
+      });
+      // Fallback in case the animationend event doesn't fire
+      setTimeout(function () { if (intro.parentNode) intro.remove(); }, 3000);
+    })();
+  </script>
 </body>
 </html>
