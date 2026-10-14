@@ -242,6 +242,8 @@ main{ width: 100%; }
   object-fit: cover;
   transition: transform 1.2s var(--ease), filter .6s var(--ease);
 }
+/* People shot: keep the subject's head in frame whenever the panel crops vertically */
+.panel:first-child .panel__img{ object-position: center top; }
 .panel::after{
   content: "";
   position: absolute;
@@ -513,10 +515,7 @@ main{ width: 100%; }
     grid-template-rows: repeat(3, 1fr);
     height: calc(100svh - 69px);
   }
-  .panel{ align-items: center; }
-  .panel:first-child .panel__img{ object-position: center 15%; }
-  .panel::after{ background: rgba(10,10,10,0.35); }
-  .panel__label{ padding: 0 16px; font-size: clamp(34px, 10vw, 48px); }
+  .panel__label{ padding: 0 16px 18px; font-size: clamp(34px, 10vw, 48px); }
   .page-head{ padding: 36px 16px 10px; }
   .about{ padding: 52px 20px 28px; }
   .about--split{
