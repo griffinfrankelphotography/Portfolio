@@ -12,9 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="styles.css?v=5" />
-  <!-- Landing photo is a CSS background; preload so it isn't discovered late -->
-  <link rel="preload" as="image" href="images/IMG_1759.jpeg" />
+  <link rel="stylesheet" href="styles.css?v=6" />
   <!-- Skip the intro splash if it's already played this session (runs before paint) -->
   <script>
     try { if (sessionStorage.getItem('introSeen')) document.documentElement.classList.add('intro-seen'); } catch (e) {}
@@ -49,19 +47,23 @@
   </nav>
 
   <main>
-    <section class="landing">
-      <div class="landing__content">
-        <p class="landing__eyebrow">Photographer — New York</p>
-        <nav class="landing__links" aria-label="Galleries">
-          <a href="portrait.html">People</a>
-          <a href="city-nature.html">City &amp; Nature</a>
-          <a href="events.html">Events</a>
-        </nav>
-      </div>
+    <section class="panels" aria-label="Galleries">
+      <a class="panel" href="portrait.html">
+        <img class="panel__img" src="images/2T7A1190.jpg" alt="" fetchpriority="high" />
+        <span class="panel__label">People</span>
+      </a>
+      <a class="panel" href="city-nature.html">
+        <img class="panel__img" src="images/2T7A2553.jpg" alt="" fetchpriority="high" />
+        <span class="panel__label">City &amp; Nature</span>
+      </a>
+      <a class="panel" href="events.html">
+        <img class="panel__img" src="images/2T7A1469.jpeg" alt="" fetchpriority="high" />
+        <span class="panel__label">Events</span>
+      </a>
     </section>
   </main>
 
-  <script src="script.js?v=4"></script>
+  <script src="script.js?v=5"></script>
   <script>
     // Remove the splash from the DOM after it fades, and mark it seen for this session
     (function () {

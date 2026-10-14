@@ -26,7 +26,7 @@ if (menuBtn && navOverlay) {
 // Image download deterrents (SmugMug-style): block right-click save, drag
 // to desktop, and long-press save on photos. Screenshots can't be blocked.
 document.addEventListener("contextmenu", (e) => {
-  if (e.target.closest(".card, .lightbox__figure, .about__photo")) e.preventDefault();
+  if (e.target.closest(".card, .lightbox__figure, .about__photo, .panel")) e.preventDefault();
 });
 document.addEventListener("dragstart", (e) => {
   if (e.target.tagName === "IMG") e.preventDefault();
