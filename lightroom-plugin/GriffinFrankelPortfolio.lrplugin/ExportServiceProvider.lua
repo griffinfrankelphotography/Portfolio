@@ -3,6 +3,7 @@
 -- updates photos.json — the same flow as the admin page, so the site picks
 -- the photos up as soon as GitHub Pages redeploys (~1 minute).
 
+local LrColor       = import 'LrColor'
 local LrDialogs     = import 'LrDialogs'
 local LrFileUtils   = import 'LrFileUtils'
 local LrHttp        = import 'LrHttp'
@@ -225,7 +226,7 @@ function exportServiceProvider.sectionsForTopOfDialog(f, propertyTable)
         f:static_text {
           title = 'Same token as the admin page — create one at\n'
             .. 'github.com/settings/tokens/new with the "repo" scope.',
-          text_color = import('LrColor')(0.5, 0.5, 0.5),
+          text_color = LrColor(0.5, 0.5, 0.5),
           fill_horizontal = 1,
         },
       },

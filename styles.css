@@ -292,12 +292,7 @@ main{ width: 100%; }
   -webkit-touch-callout: none;
 }
 .card::after,
-.about__photo::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-.lightbox__figure{ position: relative; }
+.about__photo::after,
 .lightbox__figure::after{
   content: "";
   position: absolute;
@@ -438,9 +433,9 @@ main{ width: 100%; }
   animation: fade-in .3s ease both;
 }
 .lightbox__figure{
+  position: relative;
   margin: 0;
   display: grid;
-  gap: 10px;
   justify-items: center;
 }
 .lightbox img{
@@ -450,13 +445,6 @@ main{ width: 100%; }
   height: auto;
   border-radius: 6px;
   box-shadow: var(--shadow);
-}
-.lightbox figcaption{
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-align: center;
 }
 .lightbox__close,
 .lightbox__nav{
