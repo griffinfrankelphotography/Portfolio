@@ -117,6 +117,14 @@
       color: var(--muted);
       margin-bottom: 20px;
     }
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-head .section-label { margin-bottom: 0; }
+    .btn--small { font-size: 10px; padding: 7px 14px; }
     .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
 
     /* ── Drop zone ── */
@@ -312,7 +320,7 @@
   <p class="section-label">Add Photos</p>
 
   <div class="dropzone" id="dropzone">
-    <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+    <input type="file" id="fileInput" accept="image/*" multiple hidden>
     <div class="dropzone__text">
       <strong>Click to select photos</strong>
       <span>or drag &amp; drop — JPG, PNG, HEIC, etc.</span>
@@ -334,13 +342,13 @@
   <hr class="divider">
 
   <!-- Existing galleries -->
-  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px">
-    <p class="section-label" style="margin-bottom:0">Current Galleries</p>
-    <button class="btn btn--ghost" id="backfillBtn" style="font-size:10px;padding:7px 14px" title="Detect and save aspect ratios for photos that are missing them">Fix orientations</button>
+  <div class="section-head">
+    <p class="section-label">Current Galleries</p>
+    <button class="btn btn--ghost btn--small" id="backfillBtn" title="Detect and save aspect ratios for photos that are missing them">Fix orientations</button>
   </div>
 
   <div class="gallery-section">
-    <div class="gallery-section__title">Portrait</div>
+    <div class="gallery-section__title">People</div>
     <div class="existing-grid" id="existing-portrait"></div>
   </div>
 
@@ -369,7 +377,7 @@ let photosData      = [];   // current photos.json contents
 let staged          = [];   // files picked but not yet uploaded
 let pendingAdds     = new Set();   // srcs uploaded here but not yet published
 let pendingRemoves  = new Set();
-let hasChanges      = false;
+let backfilled      = false;   // aspect ratios detected here but not yet published
 let localPreviews   = {};   // src → dataUrl for just-uploaded photos (before GH Pages deploys)
 
 // ── DOM ────────────────────────────────────────────────────────────────────
@@ -388,6 +396,7 @@ const saveStatus   = document.getElementById('saveStatus');
 const progress     = document.getElementById('progress');
 const progressFill = document.getElementById('progressFill');
 const progressLabel= document.getElementById('progressLabel');
+const backfillBtn  = document.getElementById('backfillBtn');
 const toast        = document.getElementById('toast');
 
 // ── Boot ───────────────────────────────────────────────────────────────────
@@ -424,12 +433,13 @@ function setTokenUI(connected) {
 }
 
 // ── GitHub helpers ─────────────────────────────────────────────────────────
+function ghHeaders() {
+  return { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' };
+}
+
 async function ghGet(path) {
   // no-store: GitHub lets browsers cache API reads for 60s, which hands back stale shas
-  const r = await fetch(`${API}${path}`, {
-    cache: 'no-store',
-    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
-  });
+  const r = await fetch(`${API}${path}`, { cache: 'no-store', headers: ghHeaders() });
   if (!r.ok) throw new Error(`GitHub ${r.status}`);
   return r.json();
 }
@@ -437,11 +447,7 @@ async function ghGet(path) {
 async function ghPut(path, body) {
   const r = await fetch(`${API}${path}`, {
     method: 'PUT',
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    },
+    headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
   if (!r.ok) {
@@ -500,14 +506,13 @@ function renderExisting() {
       `;
       card.querySelector('.existing-card__remove').addEventListener('click', () => {
         pendingRemoves.add(p.src);
-        markChanged();
+        updateSaveStatus();
         renderExisting();
       });
       card.querySelector('.existing-card__undo').addEventListener('click', () => {
         pendingRemoves.delete(p.src);
-        if (pendingRemoves.size === 0 && staged.length === 0) hasChanges = false;
-        renderExisting();
         updateSaveStatus();
+        renderExisting();
       });
       el.appendChild(card);
     });
@@ -557,6 +562,14 @@ function compressImage(file) {
   });
 }
 
+function aspectOf(w, h) {
+  return parseFloat((w / h).toFixed(3));
+}
+
+function plural(n, word) {
+  return `${n} ${word}${n === 1 ? '' : 's'}`;
+}
+
 function fmtBytes(b) {
   return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB'
        : b >= 1024    ? (b / 1024).toFixed(0) + ' KB'
@@ -577,7 +590,7 @@ function renderStaged() {
   stagedGrid.innerHTML = '';
   if (staged.length === 0) { stagedActions.classList.add('hidden'); return; }
   stagedActions.classList.remove('hidden');
-  stagedCount.textContent = `${staged.length} photo${staged.length > 1 ? 's' : ''} selected`;
+  stagedCount.textContent = `${plural(staged.length, 'photo')} selected`;
   staged.forEach((item, i) => {
     const card = document.createElement('div');
     card.className = 'staged-card';
@@ -590,7 +603,7 @@ function renderStaged() {
         <div class="staged-card__name">${item.file.name}</div>
         <div class="staged-card__size">${sizeLabel}</div>
         <select class="select" data-i="${i}">
-          <option value="portrait">Portrait</option>
+          <option value="portrait">People</option>
           <option value="city-nature">City &amp; Nature</option>
           <option value="events">Events</option>
         </select>
@@ -634,7 +647,7 @@ uploadBtn.addEventListener('click', async () => {
         ...(sha ? { sha } : {})
       });
 
-      uploaded.push({ src: path, tag: item.tag, aspect: parseFloat((item.w / item.h).toFixed(3)) });
+      uploaded.push({ src: path, tag: item.tag, aspect: aspectOf(item.w, item.h) });
       localPreviews[path] = item.dataUrl; // use local copy until GH Pages deploys
     } catch (e) {
       showToast(`Failed: ${filename} — ${e.message}`, 'error');
@@ -654,8 +667,8 @@ uploadBtn.addEventListener('click', async () => {
   uploadBtn.disabled = false;
 
   if (uploaded.length) {
-    markChanged();
-    showToast(`${uploaded.length} photo${uploaded.length > 1 ? 's' : ''} uploaded. Click Publish to go live.`, 'success');
+    updateSaveStatus();
+    showToast(`${plural(uploaded.length, 'photo')} uploaded. Click Publish to go live.`, 'success');
   }
 });
 
@@ -691,26 +704,25 @@ publishBtn.addEventListener('click', async () => {
     photosData = final;
     pendingAdds.clear();
     pendingRemoves.clear();
+    backfilled = false;
     renderExisting();
-    hasChanges = false;
-    saveStatus.textContent = '';
+    updateSaveStatus();
     publishBtn.disabled = false;
     showToast('Published! Site updates in ~60 seconds.', 'success');
   } catch (e) {
-    saveStatus.textContent = '';
+    updateSaveStatus();
     publishBtn.disabled = false;
     showToast(`Publish failed: ${e.message}`, 'error');
   }
 });
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-function markChanged() {
-  hasChanges = true;
-  updateSaveStatus();
+function hasChanges() {
+  return pendingAdds.size > 0 || pendingRemoves.size > 0 || backfilled;
 }
 
 function updateSaveStatus() {
-  saveStatus.textContent = hasChanges ? 'Unsaved changes' : '';
+  saveStatus.textContent = hasChanges() ? 'Unsaved changes' : '';
 }
 
 let toastTimer;
@@ -721,23 +733,22 @@ function showToast(msg, type = '') {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
 }
 
-window.addEventListener('beforeunload', e => { if (hasChanges) e.preventDefault(); });
+window.addEventListener('beforeunload', e => { if (hasChanges()) e.preventDefault(); });
 
 // ── Backfill aspect ratios for legacy photos ───────────────────────────────
-document.getElementById('backfillBtn').addEventListener('click', async () => {
+backfillBtn.addEventListener('click', async () => {
   if (!token) { showToast('Connect your GitHub token first', 'error'); return; }
   const missing = photosData.filter(p => !p.aspect);
   if (missing.length === 0) { showToast('All photos already have orientation data.', 'success'); return; }
 
-  const btn = document.getElementById('backfillBtn');
-  btn.disabled = true;
-  btn.textContent = `Detecting…`;
+  backfillBtn.disabled = true;
+  backfillBtn.textContent = 'Detecting…';
 
   let fixed = 0;
   await Promise.all(missing.map(p => new Promise(resolve => {
     const img = new Image();
     img.onload = () => {
-      p.aspect = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
+      p.aspect = aspectOf(img.naturalWidth, img.naturalHeight);
       fixed++;
       resolve();
     };
@@ -745,14 +756,15 @@ document.getElementById('backfillBtn').addEventListener('click', async () => {
     img.src = p.src;
   })));
 
-  btn.textContent = 'Fix orientations';
-  btn.disabled = false;
+  backfillBtn.textContent = 'Fix orientations';
+  backfillBtn.disabled = false;
 
   if (fixed === 0) { showToast('Could not detect any images — are they uploaded?', 'error'); return; }
 
-  markChanged();
+  backfilled = true;
+  updateSaveStatus();
   renderExisting();
-  showToast(`Detected ${fixed} photo${fixed > 1 ? 's' : ''}. Click Publish to save.`, 'success');
+  showToast(`Detected ${plural(fixed, 'photo')}. Click Publish to save.`, 'success');
 });
 </script>
 

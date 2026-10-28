@@ -7,19 +7,14 @@ const menuBtn = document.getElementById("menuBtn");
 const menuClose = document.getElementById("menuClose");
 const navOverlay = document.getElementById("navOverlay");
 if (menuBtn && navOverlay) {
-  menuBtn.addEventListener("click", () => {
-    navOverlay.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-  });
-  menuClose.addEventListener("click", () => {
-    navOverlay.classList.remove("is-open");
-    document.body.style.overflow = "";
-  });
+  const setMenuOpen = (open) => {
+    navOverlay.classList.toggle("is-open", open);
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+  menuBtn.addEventListener("click", () => setMenuOpen(true));
+  menuClose.addEventListener("click", () => setMenuOpen(false));
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && navOverlay.classList.contains("is-open")) {
-      navOverlay.classList.remove("is-open");
-      document.body.style.overflow = "";
-    }
+    if (e.key === "Escape" && navOverlay.classList.contains("is-open")) setMenuOpen(false);
   });
 }
 
@@ -32,15 +27,11 @@ document.addEventListener("dragstart", (e) => {
   if (e.target.tagName === "IMG") e.preventDefault();
 });
 
-// Lightbox
+// Lightbox + galleries (only on gallery pages)
 const lightbox = document.getElementById("lightbox");
 
 if (lightbox) {
   const lightboxImg = document.getElementById("lightboxImg");
-  const lightboxCaption = document.getElementById("lightboxCaption");
-  const closeLightboxBtn = document.getElementById("closeLightbox");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
 
   let currentList = [];
   let activeIndex = 0;
@@ -48,10 +39,7 @@ if (lightbox) {
   function openLightbox(list, i) {
     currentList = list;
     activeIndex = i;
-    const p = currentList[activeIndex];
-    lightboxImg.src = p.src;
-    lightboxImg.alt = "";
-    if (lightboxCaption) lightboxCaption.textContent = "";
+    lightboxImg.src = currentList[activeIndex].src;
     lightbox.classList.add("is-open");
     lightbox.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -65,13 +53,12 @@ if (lightbox) {
   }
 
   function step(dir) {
-    activeIndex = (activeIndex + dir + currentList.length) % currentList.length;
-    openLightbox(currentList, activeIndex);
+    openLightbox(currentList, (activeIndex + dir + currentList.length) % currentList.length);
   }
 
-  closeLightboxBtn.addEventListener("click", closeLightbox);
-  prevBtn.addEventListener("click", () => step(-1));
-  nextBtn.addEventListener("click", () => step(1));
+  document.getElementById("closeLightbox").addEventListener("click", closeLightbox);
+  document.getElementById("prevBtn").addEventListener("click", () => step(-1));
+  document.getElementById("nextBtn").addEventListener("click", () => step(1));
   lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
   window.addEventListener("keydown", (e) => {
     if (!lightbox.classList.contains("is-open")) return;
@@ -132,11 +119,11 @@ if (lightbox) {
 
       // Legacy photo without stored aspect — detect and re-layout once
       if (!p.aspect) {
-        img.onload = () => {
+        img.addEventListener("load", () => {
           p.aspect = parseFloat((img.naturalWidth / img.naturalHeight).toFixed(3));
           cancelAnimationFrame(rafId);
           rafId = requestAnimationFrame(layout);
-        };
+        });
       }
 
       card.appendChild(img);
@@ -184,5 +171,5 @@ if (lightbox) {
       renderGallery("grid-city-nature", "city-nature", photos);
       renderGallery("grid-events", "events", photos);
     })
-    .catch(() => {});
+    .catch(err => console.error("Could not load photos.json", err));
 }
