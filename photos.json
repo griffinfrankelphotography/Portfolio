@@ -73,5 +73,15 @@
     "src": "images/IMG_4961.jpg",
     "tag": "portrait",
     "aspect": 1.5
+  },
+  {
+    "src": "images/2T7A3125.jpg",
+    "tag": "portrait",
+    "aspect": 0.667
+  },
+  {
+    "src": "images/2T7A3126.jpg",
+    "tag": "portrait",
+    "aspect": 0.667
   }
 ]
